@@ -1,4 +1,4 @@
-import data from '../../data.js'
+import data from '../../data.js';
 
 class TaskModel {
   /* Función que devuelve todas las tareas */
@@ -9,31 +9,30 @@ class TaskModel {
       if (!data.length) {
         reject({
           message: 'No tasks found',
-        })
+        });
       }
 
       // Si el arreglo de tareas no está vacío, resolvemos la promesa
-      resolve(data)
-    })
+      resolve(data);
+    });
   }
 
   /* Función que devuelve una tarea por su id */
   static getTaskById(id) {
     return new Promise((resolve, reject) => {
       // Buscamos la tarea en el arreglo de tareas
-      const task = data.find((task) => task.id === id)
+      const task = data.find((task) => task.id === id);
 
       // Si no encontramos la tarea, rechazamos la promesa
       if (!task) {
         reject({
           message: 'No task found',
-        })
-
+        });
       }
 
       // Si encontramos la tarea, resolvemos la promesa
-      resolve(task)
-    })
+      resolve(task);
+    });
   }
 
   static createTask(task) {
@@ -42,7 +41,7 @@ class TaskModel {
       if (!task.title || !task.description) {
         reject({
           message: 'Missing title or description',
-        })
+        });
       }
 
       // Si hay título y descripción, creamos la tarea, asignandole un id
@@ -51,13 +50,13 @@ class TaskModel {
         id: data.length + 1,
         done: false,
         ...task,
-      }
+      };
 
       // Agregamos la tarea al arreglo de tareas
-      data.push(newTask)
+      data.push(newTask);
 
       // Resolvemos la promesa con la tarea creada
-      resolve(newTask)
+      resolve(newTask);
     });
   }
 
@@ -71,22 +70,22 @@ class TaskModel {
       if (!taskToUpdate) {
         reject({
           message: 'No task found',
-        })
+        });
       }
 
       // Si encontramos la tarea, actualizamos la tarea usando el spread operator
       const updatedTask = {
         ...taskToUpdate,
         ...task,
-      }
+      };
 
       // Actualizamos la tarea en el arreglo de tareas.
       // Eliminamos la tarea anterior y agregamos la tarea actualizada
-      data.splice(id - 1, 1, updatedTask)
+      data.splice(id - 1, 1, updatedTask);
 
       // Resolvemos la promesa con la tarea actualizada
-      resolve(updatedTask)
-    })
+      resolve(updatedTask);
+    });
   }
 
   /* Función que elimina una tarea por su id */
@@ -94,22 +93,22 @@ class TaskModel {
     return new Promise((resolve, reject) => {
       // Buscamos el índice de la tarea en el arreglo de tareas
       // Si no se encuentra la tarea, el índice será -1
-      const index = data.findIndex((task) => task.id === id)
+      const index = data.findIndex((task) => task.id === id);
 
       // Si no encontramos la tarea, rechazamos la promesa
       if (index === -1) {
         reject({
           message: 'No task found',
-        })
+        });
       }
 
       // Si encontramos la tarea, la eliminamos del arreglo de tareas
-      data.splice(index, 1)
+      data.splice(index, 1);
 
       // Resolvemos la promesa con un mensaje de éxito
-      resolve({ message: "Task deleted successfully" })
-    })
+      resolve({ message: 'Task deleted successfully' });
+    });
   }
 }
 
-export default TaskModel
+export default TaskModel;

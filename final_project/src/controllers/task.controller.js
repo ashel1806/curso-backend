@@ -1,66 +1,67 @@
-import TaskModel from '../models/task.model.js'
+import TaskModel from '../models/task.model.js';
+import ApiUtil from '../utils/api-response.util.js';
 
 class TaskController {
   static async getAllTasks(req, res) {
     try {
-      const allTasks = await TaskModel.getAllTasks()
+      const allTasks = await TaskModel.getAllTasks();
 
-      return res.status(200).json({ tasks: allTasks })
+      return ApiUtil.sendResponse(res, 200, allTasks);
     } catch (error) {
-      return res.status(400).json({ error: error.message })
+      return ApiUtil.sendResponse(res, 404, error);
     }
   }
 
   static async getTaskById(req, res) {
     try {
-      const { id } = req.params
+      const { id } = req.params;
 
-      const taskId = parseInt(id)
-      const task = await TaskModel.getTaskById(taskId)
+      const taskId = parseInt(id);
+      const task = await TaskModel.getTaskById(taskId);
 
-      return res.status(200).json({ task })
+      return ApiUtil.sendResponse(res, 200, task);
     } catch (error) {
-      console.log(error)
-      return res.status(400).json({ error: error.message })
+      console.log(error);
+      return ApiUtil.sendResponse(res, 404, error);
     }
   }
 
   static async createTask(req, res) {
     try {
-      const task = await TaskModel.createTask(req.body)
+      const task = await TaskModel.createTask(req.body);
 
-      return res.status(201).json({ task })
+      return ApiUtil.sendResponse(res, 201, task);
     } catch (error) {
-      return res.status(400).json({ error: error.message })
+      return ApiUtil.sendResponse(res, 400, error);
     }
   }
 
   static async updateTask(req, res) {
     try {
-      const { id } = req.params
+      const { id } = req.params;
 
       const taskId = parseInt(id);
       const task = await TaskModel.updateTask(taskId, req.body);
 
-      return res.status(200).json({ task })
+      return ApiUtil.sendResponse(res, 200, task);
     } catch (error) {
-      console.log(error)
-      return res.status(400).json({ error: error.message })
+      console.log(error);
+      return ApiUtil.sendResponse(res, 400, error);
     }
   }
 
   static async deleteTask(req, res) {
     try {
-      const { id } = req.params
+      const { id } = req.params;
 
-      const taskId = parseInt(id)
-      const task = await TaskModel.deleteTask(taskId)
+      const taskId = parseInt(id);
+      const task = await TaskModel.deleteTask(taskId);
 
-      return res.status(200).json({ task })
+      return ApiUtil.sendResponse(res, 200, task);
     } catch (error) {
-      return res.status(400).json({ error: error.message })
+      return ApiUtil.sendResponse(res, 400, error);
     }
   }
 }
 
-export default TaskController
+export default TaskController;
