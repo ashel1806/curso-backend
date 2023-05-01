@@ -1,4 +1,4 @@
-import data from '../../data.js';
+import { tasks as data } from '../../data.js';
 
 class TaskModel {
   /* Función que devuelve todas las tareas */
@@ -42,6 +42,7 @@ class TaskModel {
         reject({
           message: 'Missing title or description',
         });
+        return;
       }
 
       // Si hay título y descripción, creamos la tarea, asignandole un id
@@ -71,6 +72,7 @@ class TaskModel {
         reject({
           message: 'No task found',
         });
+        return;
       }
 
       // Si encontramos la tarea, actualizamos la tarea usando el spread operator
@@ -100,6 +102,7 @@ class TaskModel {
         reject({
           message: 'No task found',
         });
+        return;
       }
 
       // Si encontramos la tarea, la eliminamos del arreglo de tareas

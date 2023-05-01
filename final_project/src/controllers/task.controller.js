@@ -1,5 +1,6 @@
 import TaskModel from '../models/task.model.js';
 import ApiUtil from '../utils/api-response.util.js';
+import TaskService from '../services/task.service.js';
 
 class TaskController {
   static async getAllTasks(req, res) {
@@ -21,16 +22,20 @@ class TaskController {
 
       return ApiUtil.sendResponse(res, 200, task);
     } catch (error) {
-      console.log(error);
       return ApiUtil.sendResponse(res, 404, error);
     }
   }
 
   static async createTask(req, res) {
     try {
-      const task = await TaskModel.createTask(req.body);
+      const { userId, ...task } = req.body;
 
-      return ApiUtil.sendResponse(res, 201, task);
+      console.log(userId);
+      console.log(task);
+
+      const newTask = await TaskService.createTask(task, userId);
+
+      return ApiUtil.sendResponse(res, 201, newTask);
     } catch (error) {
       return ApiUtil.sendResponse(res, 400, error);
     }

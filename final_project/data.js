@@ -1,4 +1,4 @@
-const tasks = [
+export const tasks = [
   {
     id: 1,
     title: 'Learn React',
@@ -25,4 +25,4 @@ const tasks = [
   },
 ];
 
-export default tasks;
+export const users = [];
