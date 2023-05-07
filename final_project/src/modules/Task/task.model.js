@@ -1,4 +1,4 @@
-import { tasks as data } from '../../data.js';
+import { tasks as data } from '../../../data.js';
 
 class TaskModel {
   /* Función que devuelve todas las tareas */

@@ -1,6 +1,6 @@
-import TaskModel from '../models/task.model.js';
-import ApiUtil from '../utils/api-response.util.js';
-import TaskService from '../services/task.service.js';
+import TaskModel from './task.model.js';
+import ApiUtil from '../../utils/api-response.util.js';
+import TaskService from './task.service.js';
 
 class TaskController {
   static async getAllTasks(req, res) {
@@ -28,7 +28,8 @@ class TaskController {
 
   static async createTask(req, res) {
     try {
-      const { userId, ...task } = req.body;
+      const { ...task } = req.body;
+      const userId = req.user.id;
 
       console.log(userId);
       console.log(task);
