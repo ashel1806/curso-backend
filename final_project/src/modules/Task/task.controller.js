@@ -1,15 +1,18 @@
 import TaskModel from './task.model.js';
 import ApiUtil from '../../utils/api-response.util.js';
 import TaskService from './task.service.js';
+import Task from './task.model.js';
+import { HTTP_CODES } from '../../common/constants/constants.js';
 
 class TaskController {
   static async getAllTasks(req, res) {
     try {
-      const allTasks = await TaskModel.getAllTasks();
+      const { showUsers } = req.query;
+      const allTasks = await TaskService.getAllTasks(showUsers);
 
-      return ApiUtil.sendResponse(res, 200, allTasks);
+      return ApiUtil.sendResponse(res, HTTP_CODES.OK, allTasks);
     } catch (error) {
-      return ApiUtil.sendResponse(res, 404, error);
+      return ApiUtil.sendResponse(res, HTTP_CODES.NOT_FOUND, error);
     }
   }
 
@@ -17,12 +20,11 @@ class TaskController {
     try {
       const { id } = req.params;
 
-      const taskId = parseInt(id);
-      const task = await TaskModel.getTaskById(taskId);
+      const task = await Task.findById(id);
 
-      return ApiUtil.sendResponse(res, 200, task);
+      return ApiUtil.sendResponse(res, HTTP_CODES.OK, task);
     } catch (error) {
-      return ApiUtil.sendResponse(res, 404, error);
+      return ApiUtil.sendResponse(res, HTTP_CODES.NOT_FOUND, error);
     }
   }
 
@@ -31,14 +33,11 @@ class TaskController {
       const { ...task } = req.body;
       const userId = req.user.id;
 
-      console.log(userId);
-      console.log(task);
-
       const newTask = await TaskService.createTask(task, userId);
 
-      return ApiUtil.sendResponse(res, 201, newTask);
+      return ApiUtil.sendResponse(res, HTTP_CODES.CREATE, newTask);
     } catch (error) {
-      return ApiUtil.sendResponse(res, 400, error);
+      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
     }
   }
 
@@ -46,13 +45,11 @@ class TaskController {
     try {
       const { id } = req.params;
 
-      const taskId = parseInt(id);
-      const task = await TaskModel.updateTask(taskId, req.body);
+      const task = await TaskService.updateTask(id, req.body);
 
-      return ApiUtil.sendResponse(res, 200, task);
+      return ApiUtil.sendResponse(res, HTTP_CODES.OK, task);
     } catch (error) {
-      console.log(error);
-      return ApiUtil.sendResponse(res, 400, error);
+      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
     }
   }
 
@@ -60,12 +57,11 @@ class TaskController {
     try {
       const { id } = req.params;
 
-      const taskId = parseInt(id);
-      const task = await TaskModel.deleteTask(taskId);
+      const task = await TaskService.deleteTask(id)
 
-      return ApiUtil.sendResponse(res, 200, task);
+      return ApiUtil.sendResponse(res, HTTP_CODES.OK, task);
     } catch (error) {
-      return ApiUtil.sendResponse(res, 400, error);
+      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
     }
   }
 }

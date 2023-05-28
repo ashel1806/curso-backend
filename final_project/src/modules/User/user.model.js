@@ -1,83 +1,52 @@
-import { users } from '../../../data.js';
+import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
 
-class UserModel {
-  /* Función que devuelve todos los usuarios */
-  static getAllUsers() {
-    return new Promise((resolve, reject) => {
-      // Si el arreglo de usuarios está vacío, rechazamos la promesa
-      // con un mensaje de error: 'No users found'
-      if (!users.length) {
-        reject({
-          message: 'No users found',
-        });
-        return;
-      }
-
-      // Si el arreglo de usuarios no está vacío, resolvemos la promesa
-      resolve(users);
-    });
+/* Definiendo el esquema */
+const userSchema = new Schema({
+  username: {
+    type: String,
+    trim: true,
+    unique: true,
+    required: [true, 'Username is required'],
+  },
+  password: {
+    type: String,
+    trim: true,
+    required: [true, 'Password is required'],
+  },
+  email: {
+    type: String,
+    trim: true,
+    unique: true,
+    required: [true, 'Email is required'],
+  },
+  tasks: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Task',
+    default: [],
   }
+});
 
-  /* Función que devuelve un usuario por su id */
-  static getUserById(id) {
-    return new Promise((resolve, reject) => {
-      const user = users.find((user) => user.id === id);
+/* Hasheando la contraseña antes de crear el usuario */
+userSchema.pre('save', async function (next) {
+  const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 
-      // Si no encontramos el usuario, rechazamos la promesa
-      if (!user) {
-        reject({
-          message: 'No user found',
-        });
-        return;
-      }
+  this.password = await bcrypt.hash(this.password, SALT_ROUNDS);
 
-      // Si encontramos el usuario, resolvemos la promesa
-      resolve(user);
-    });
+  next();
+})
+
+/* Eliminando el _id, __v y contraseña cuando se muestre el usuario */
+userSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id;
+    delete returnedObject._id;
+    delete returnedObject.__v;
+    delete returnedObject.password;
   }
+})
 
-  static getUserByEmail(email) {
-    return new Promise((resolve, reject) => {
-      const user = users.find((user) => user.email === email);
+/* Creando el modelo */
+const User = model('User', userSchema);
 
-      // Si no encontramos el usuario, rechazamos la promesa
-      if (!user) {
-        reject({
-          message: 'No user found',
-        });
-        return;
-      }
-
-      // Si encontramos el usuario, resolvemos la promesa
-      resolve(user);
-    });
-  }
-
-  /* Función que permite crear un usuario */
-  static createUser(user) {
-    return new Promise((resolve, reject) => {
-      // Si no hay nombre o email, rechazamos la promesa
-      if (!user.username || !user.email || !user.password) {
-        reject({
-          message: 'Missing some fields',
-        });
-        return;
-      }
-
-      console.log(user)
-
-      const newUser = {
-        id: users.length + 1,
-        ...user,
-      };
-
-      // Agregamos el usuario al arreglo de usuarios
-      users.push(newUser);
-
-      // Resolvemos la promesa con el usuario creado
-      resolve(newUser);
-    });
-  }
-}
-
-export default UserModel;
+export default User;

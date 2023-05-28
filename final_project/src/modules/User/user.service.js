@@ -1,51 +1,78 @@
-import bcrypt from 'bcrypt';
-import UserModel from './user.model.js';
-import TaskModel from '../Task/task.model.js';
+import User from './user.model.js';
 
 class UserService {
   /**
-   * Función que permite obtener todas las tareas de un usuario su id
+   * Función para obtener todos los usuarios de la BD
    *
-   * @param {number} userId - Id del usuario del cual vamos a buscar las tareas
+   * @param {boolean} showTasks Verifica si queremos mostrar información de las tareas
    *
-   * @returns {Promise<UserWithTasks>} Promesa que resuelve a un objeto con la
-   * información del usuario y sus tareas
+   * @returns {Promise<UserWithTasks[]>} Promesa con el arreglo de usuarios
    */
-  static async getTasksByUserId(userId) {
+  static async getAllUsers(showTasks) {
     try {
-      // Obtenemos el usuario
-      const user = await UserModel.getUserById(userId);
+      let users = [];
 
-      // Obtenemos las tareas del usuario
-      const tasks = await Promise.all(
-        user.tasks.map((taskId) => TaskModel.getTaskById(taskId))
-      );
+      // Si showTasks es false no mostramos la información de las tareas
+      if (!showTasks) {
+        users = await User.find({});
 
-      // Devolvemos el usuario con sus tareas
-      return { ...user, tasks };
+        return users;
+      }
+
+      // Si showTasks es true, mostramos las tareas con su información
+      users = await User.find({}).populate({
+        path: 'tasks',
+        select: 'title description done -_id',
+      });
+
+      return users;
     } catch (error) {
-      // Si hay un error, lo lanzamos
       throw error;
     }
   }
 
-  static async createUser(user) {
+  /**
+   * Función para obtener un usuario
+   *
+   * @param {string} id Id del usuario que desamos obtener
+   * @param {boolean} showTask Verifica si queremos mostrar información de la tarea
+   *
+   * @returns {Promise<UserWithTasks>}
+   */
+  static async getUserById(id, showTask) {
     try {
-      // Constante que define el número de saltos que dará el algoritmo
-      // para generar el hash
-      const SALT_ROUNDS = 10;
+      let user = null;
 
-      // Encriptamos la contraseña
-      const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS);
+      // Si showTask es false no mostramos la información de la tarea
+      if (!showTask) {
+        user = await User.findById(id);
 
-      // Creamos el usuario con la contraseña encriptada
-      const newUser = await UserModel.createUser({
-        ...user,
-        tasks: [],
-        password: hashedPassword,
+        return user;
+      }
+
+      // Si showTask es true, mostramos la información de la tarea
+      user = await User.findById(id).populate({
+        path: 'tasks',
+        select: 'title description done -_id',
       });
 
-      console.log(newUser)
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Función para crear un nuevo usuario
+   *
+   * @param {User} user Información del usuario a crear
+   *
+   * @returns {Promise<User>} Promesa con el nuevo usuario creado
+   */
+  static async createUser(user) {
+    try {
+      const newUser = await User.create(user);
+
       // Devolvemos el usuario creado
       return newUser;
     } catch (error) {
@@ -53,8 +80,6 @@ class UserService {
       throw error;
     }
   }
-
-
 }
 
 export default UserService;
@@ -75,7 +100,7 @@ export default UserService;
  * @property {number} id - Id del usuario
  * @property {string} name - Nombre del usuario
  * @property {string} email - Email del usuario
- * @property {Array<number>} tasks - Arreglo con los ids de las tareas del usuario
+ * @property {Array<string>} tasks - Arreglo con los ids de las tareas del usuario
  */
 
 /**
@@ -85,4 +110,3 @@ export default UserService;
  * @property {string} email - Email del usuario
  * @property {Array<Task>} tasks - Arreglo con las tareas del usuario
  */
-

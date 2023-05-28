@@ -7,6 +7,7 @@ import UserRouter from './src/modules/User/user.router.js';
 import AuthRouter from './src/modules/Auth/auth.router.js';
 
 import { bodyLogger } from './src/middlewares/logger.js';
+import connectDB from './src/config/mongo.config.js';
 
 // Configuramos dotenv
 config();
@@ -40,7 +41,6 @@ app.use('/tasks', TaskRouter);
 // Ruta para los usuarios
 app.use('/users', UserRouter);
 
-
 ///////////////
 // SERVER UP //
 ///////////////
@@ -48,6 +48,8 @@ app.use('/users', UserRouter);
 // Levantamos el servidor
 const PORT = process.env.PORT | 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server runnging on port ${PORT}`);
+app.listen(PORT, async () => {
+  await connectDB();
+
+  console.log(`Server runnging on http://localhost:${PORT}`);
 });

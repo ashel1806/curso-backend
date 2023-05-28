@@ -1,53 +1,30 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import UserService from '../User/user.service.js';
-import UserModel from '../User/user.model.js';
 import ApiUtil from '../../utils/api-response.util.js';
+import { HTTP_CODES } from '../../common/constants/constants.js';
+import UserService from '../User/user.service.js';
+import AuthService from './auth.service.js';
 
 class AuthController {
   static async login(req, res) {
     try {
       const { email, password } = req.body;
-      console.log(email, password)
+      const token = await AuthService.login({ email, password });
 
-      const user = await UserModel.getUserByEmail(email);
-
-      console.log(user)
-
-      const isPasswordValid = bcrypt.compareSync(password, user.password);
-
-      console.log(isPasswordValid)
-
-      if (!isPasswordValid) {
-        return res.status(401).json({
-          message: 'Incorrect password',
-        });
-      }
-
-      const payload = {
-        id: user.id,
-        email: user.email,
-      };
-
-      const token = jwt.sign(payload, `${process.env.JWT_SECRET}`);
-
-      return ApiUtil.sendResponse(res, 200, {
+      return ApiUtil.sendResponse(res, HTTP_CODES.OK, {
         token,
       });
     } catch (error) {
-      return ApiUtil.sendResponse(res, 500, error);
+      console.log(error);
+      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
     }
   }
 
   static async signUp(req, res) {
     try {
-      const user = await UserService.createUser(req.body)
+      const user = await UserService.createUser(req.body);
 
-      console.log('signUp', user)
-
-      return ApiUtil.sendResponse(res, 201, user);
+      return ApiUtil.sendResponse(res, HTTP_CODES.CREATE, user);
     } catch (error) {
-      return ApiUtil.sendResponse(res, 400, error);
+      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
     }
   }
 }
