@@ -5,30 +5,30 @@ import Task from './task.model.js';
 import { HTTP_CODES } from '../../common/constants/constants.js';
 
 class TaskController {
-  static async getAllTasks(req, res) {
+  static async getAllTasks(req, res, next) {
     try {
       const { showUsers } = req.query;
       const allTasks = await TaskService.getAllTasks(showUsers);
 
       return ApiUtil.sendResponse(res, HTTP_CODES.OK, allTasks);
     } catch (error) {
-      return ApiUtil.sendResponse(res, HTTP_CODES.NOT_FOUND, error);
+      next(error);
     }
   }
 
-  static async getTaskById(req, res) {
+  static async getTaskById(req, res, next) {
     try {
       const { id } = req.params;
 
-      const task = await Task.findById(id);
+      const task = await TaskService.getTaskById(id);
 
       return ApiUtil.sendResponse(res, HTTP_CODES.OK, task);
     } catch (error) {
-      return ApiUtil.sendResponse(res, HTTP_CODES.NOT_FOUND, error);
+      next(error);
     }
   }
 
-  static async createTask(req, res) {
+  static async createTask(req, res, next) {
     try {
       const { ...task } = req.body;
       const userId = req.user.id;
@@ -37,11 +37,11 @@ class TaskController {
 
       return ApiUtil.sendResponse(res, HTTP_CODES.CREATE, newTask);
     } catch (error) {
-      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
+      next(error);
     }
   }
 
-  static async updateTask(req, res) {
+  static async updateTask(req, res, next) {
     try {
       const { id } = req.params;
 
@@ -49,11 +49,11 @@ class TaskController {
 
       return ApiUtil.sendResponse(res, HTTP_CODES.OK, task);
     } catch (error) {
-      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
+      next(error);
     }
   }
 
-  static async deleteTask(req, res) {
+  static async deleteTask(req, res, next) {
     try {
       const { id } = req.params;
 
@@ -61,7 +61,7 @@ class TaskController {
 
       return ApiUtil.sendResponse(res, HTTP_CODES.OK, task);
     } catch (error) {
-      return ApiUtil.sendResponse(res, HTTP_CODES.BAD_REQUEST, error);
+      next(error);
     }
   }
 }

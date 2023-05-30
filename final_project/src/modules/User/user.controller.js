@@ -3,7 +3,7 @@ import ApiUtil from '../../utils/api-response.util.js';
 import UserService from './user.service.js';
 
 class UserController {
-  static async getAllUsers(req, res) {
+  static async getAllUsers(req, res, next) {
     try {
       const { showTasks } = req.query;
 
@@ -11,11 +11,11 @@ class UserController {
 
       return ApiUtil.sendResponse(res, HTTP_CODES.OK, users);
     } catch (error) {
-      return ApiUtil.sendResponse(res, HTTP_CODES.NOT_FOUND, error);
+      next(error);
     }
   }
 
-  static async getUserById(req, res) {
+  static async getUserById(req, res, next) {
     try {
       const { showTask } = req.query;
       const { id } = req.params;
@@ -24,7 +24,7 @@ class UserController {
 
       return ApiUtil.sendResponse(res, HTTP_CODES.OK, user);
     } catch (error) {
-      return ApiUtil.sendResponse(res, HTTP_CODES.NOT_FOUND, error);
+      next(error);
     }
   }
 }

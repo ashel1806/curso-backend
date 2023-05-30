@@ -1,19 +1,20 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { ConnectionError } from '../common/errors/errors';
 
 dotenv.config();
 
-const { DB_PASSWORD, DB_USERNAME, DB_NAME } = process.env;
+const { MONGODB_URI } = process.env;
 
-const MONGO_URI = `mongodb://${DB_USERNAME}:${DB_PASSWORD}@localhost:27017/${DB_NAME}?authSource=admin`;
-
+/**
+ * Función para realizar la conexión a la base de datos
+ */
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(MONGO_URI);
+    const conn = await mongoose.connect(MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    throw new ConnectionError('Error connecting to Database');
   }
 };
 

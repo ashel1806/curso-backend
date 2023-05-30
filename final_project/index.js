@@ -8,6 +8,7 @@ import AuthRouter from './src/modules/Auth/auth.router.js';
 
 import { bodyLogger } from './src/middlewares/logger.js';
 import connectDB from './src/config/mongo.config.js';
+import errorHandler from './src/middlewares/error-handler.js';
 
 // Configuramos dotenv
 config();
@@ -40,6 +41,8 @@ app.use('/tasks', TaskRouter);
 
 // Ruta para los usuarios
 app.use('/users', UserRouter);
+
+app.use(errorHandler);
 
 ///////////////
 // SERVER UP //

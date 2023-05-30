@@ -1,3 +1,4 @@
+// Constante para el manejo de códigos de respuesta HTTP
 export const HTTP_CODES = Object.freeze({
   OK: 200,
   CREATE: 201,

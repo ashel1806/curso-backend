@@ -2,6 +2,13 @@ import User from '../User/user.model.js';
 import Task from './task.model.js';
 
 class TaskService {
+  /**
+   * Función para obtener todas las tareas
+   *
+   * @param {boolean} showUsers Indica si se debe devolver la información de las usuarios
+   *
+   * @returns {Promise<Task[]>} Array con todas las tareas
+   */
   static async getAllTasks(showUsers) {
     try {
       let allTasks = [];
@@ -16,7 +23,7 @@ class TaskService {
       // Si showUsers es true, devolvemos las tareas con la información del usuario
       allTasks = await Task.find({}).populate({
         path: 'user',
-        select: 'username email -_id'
+        select: 'username email -_id',
       });
 
       return allTasks;
@@ -25,19 +32,29 @@ class TaskService {
     }
   }
 
+  /**
+   * Función para obtener una tarea por su id
+   *
+   * @param {string} id Id de la tarea a buscar
+   * @param {boolean} showUser Indica si se debe devolver la información del usuario que creó la tarea
+   *
+   * @returns {Promise<Task>} Tarea encontrada
+   */
   static async getTaskById(id, showUser) {
     try {
       let task = null;
 
+      // Si showUser es false, devolvemos la tarea sin la información del usuario
       if (!showUser) {
         task = await Task.findById(id);
 
         return task;
       }
 
-      task = await Task.findById(id).populate('user', {
-        name: 1,
-        email: 1,
+      // Si showUser es true, devolvemos la tarea con la información del usuario
+      task = await Task.findById(id).populate({
+        path: 'user',
+        select: 'username email -_id',
       });
 
       return task;
@@ -46,6 +63,14 @@ class TaskService {
     }
   }
 
+  /**
+   * Función para actualizar una tarea
+   *
+   * @param {string} id Id de la tarea que se actualizará
+   * @param {Task} task Objeto con la nueva información de la tarea
+   *
+   * @returns {Promise<Task>} Tarea actualizada
+   */
   static async updateTask(id, task) {
     try {
       const updatedTask = await Task.findByIdAndUpdate(id, task, {
@@ -58,6 +83,13 @@ class TaskService {
     }
   }
 
+  /**
+   * Función para eliminar una tarea
+   *
+   * @param {string} id Id de la tarea que se eliminará
+   *
+   * @returns {Promise<Object>}
+   */
   static async deleteTask(id) {
     try {
       await Task.deleteOne({ _id: id });
@@ -88,7 +120,14 @@ class TaskService {
       });
 
       // Asignamos la tarea al usuario
-      user.tasks = user.tasks.concat(newTask.id);
+      await User.updateOne(
+        { _id: user.id },
+        {
+          $push: {
+            tasks: newTask.id,
+          },
+        }
+      );
 
       // Devolvemos la tarea creada
       return newTask;
@@ -110,20 +149,4 @@ export default TaskService;
  * @property {string} description - Descripción de la tarea
  * @property {boolean} done - Estado de la tarea
  *
- */
-
-/**
- * @typedef {Object} User
- * @property {number} id - Id del usuario
- * @property {string} name - Nombre del usuario
- * @property {string} email - Email del usuario
- * @property {Array<number>} tasks - Arreglo con los ids de las tareas del usuario
- */
-
-/**
- * @typedef {Object} UserWithTasks
- * @property {number} id - Id del usuario
- * @property {string} name - Nombre del usuario
- * @property {string} email - Email del usuario
- * @property {Array<Task>} tasks - Arreglo con las tareas del usuario
  */

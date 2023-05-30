@@ -6,7 +6,7 @@ class UserService {
    *
    * @param {boolean} showTasks Verifica si queremos mostrar información de las tareas
    *
-   * @returns {Promise<UserWithTasks[]>} Promesa con el arreglo de usuarios
+   * @returns {Promise<User[]>} Promesa con el arreglo de usuarios
    */
   static async getAllUsers(showTasks) {
     try {
@@ -37,7 +37,7 @@ class UserService {
    * @param {string} id Id del usuario que desamos obtener
    * @param {boolean} showTask Verifica si queremos mostrar información de la tarea
    *
-   * @returns {Promise<UserWithTasks>}
+   * @returns {Promise<User>}
    */
   static async getUserById(id, showTask) {
     try {
@@ -100,13 +100,5 @@ export default UserService;
  * @property {number} id - Id del usuario
  * @property {string} name - Nombre del usuario
  * @property {string} email - Email del usuario
- * @property {Array<string>} tasks - Arreglo con los ids de las tareas del usuario
- */
-
-/**
- * @typedef {Object} UserWithTasks
- * @property {number} id - Id del usuario
- * @property {string} name - Nombre del usuario
- * @property {string} email - Email del usuario
- * @property {Array<Task>} tasks - Arreglo con las tareas del usuario
+ * @property {Array<string | Task>} tasks - Arreglo con los ids de las tareas del usuario
  */
